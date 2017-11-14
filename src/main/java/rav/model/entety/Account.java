@@ -7,12 +7,12 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "account")
+public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private String login;
+    private String username;
     private Date birthday;
     private String password;
 }

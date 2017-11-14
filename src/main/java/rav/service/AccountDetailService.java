@@ -8,33 +8,33 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import rav.model.UserDao;
-import rav.model.entety.User;
+import rav.model.AccountDao;
+import rav.model.entety.Account;
 import rav.util.Constants;
 
 import java.util.Collection;
 import java.util.Collections;
 
 @Service
-public class PpTaskUserDetailService implements UserDetailsService{
-    private UserDao userDao;
+public class AccountDetailService implements UserDetailsService {
+    private AccountDao accountDao;
 
     @Autowired
-    public PpTaskUserDetailService(UserDao userDao) {
-        this.userDao = userDao;
+    public AccountDetailService(AccountDao accountDao) {
+        this.accountDao = accountDao;
     }
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return convertToUserDetails(userDao.findByLogin(s));
+        return convertToUserDetails(accountDao.findByUsername(s));
     }
 
-    private UserDetails convertToUserDetails(User user) {
-        return user == null ? null : new UserWrapper(user);
+    private UserDetails convertToUserDetails(Account account) {
+        return account == null ? null : new UserWrapper(account);
     }
 
 
-    private static class UserWrapper implements UserDetails{
+    private static class UserWrapper implements UserDetails {
         // hardcod is enough for now. Should be replaced by
         private static Collection<? extends GrantedAuthority> simpleAuthorities =
                 Collections.singletonList(new SimpleGrantedAuthority(Constants.SIMPLE_AUTHORITY));
@@ -45,9 +45,9 @@ public class PpTaskUserDetailService implements UserDetailsService{
         @Getter
         private String password;
 
-        public UserWrapper(User user) {
-            this.username = user.getLogin();
-            this.password = user.getPassword();
+        public UserWrapper(Account account) {
+            this.username = account.getUsername();
+            this.password = account.getPassword();
         }
 
         @Override

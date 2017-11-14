@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.NonNull;
 
 @Data
-public class UserTO {
+public class AccountDto {
     @NonNull
     private String login;
     @NonNull
