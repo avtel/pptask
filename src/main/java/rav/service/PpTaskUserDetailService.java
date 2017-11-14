@@ -33,9 +33,13 @@ public class PpTaskUserDetailService implements UserDetailsService{
         return user == null ? null : new UserWrapper(user);
     }
 
+
     private static class UserWrapper implements UserDetails{
-        private static Collection<? extends GrantedAuthority> authorities =
+        // hardcod is enough for now. Should be replaced by
+        private static Collection<? extends GrantedAuthority> simpleAuthorities =
                 Collections.singletonList(new SimpleGrantedAuthority(Constants.SIMPLE_AUTHORITY));
+        private static Collection<? extends GrantedAuthority> adminAuthorities =
+                Collections.singletonList(new SimpleGrantedAuthority(Constants.ADMIN_AUTHORITY));
         @Getter
         private String username;
         @Getter
@@ -48,7 +52,7 @@ public class PpTaskUserDetailService implements UserDetailsService{
 
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
-            return authorities;
+            return username.equals(Constants.ADMIN_LOGIN) ? adminAuthorities : simpleAuthorities;
         }
 
         @Override

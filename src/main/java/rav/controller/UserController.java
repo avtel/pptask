@@ -20,6 +20,13 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/{login}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public UserTO getUser(@PathVariable String login) {
+        return userService.getUser(login);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public void createUser(@RequestBody UserTO user) {

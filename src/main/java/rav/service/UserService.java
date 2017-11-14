@@ -2,13 +2,16 @@ package rav.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import rav.model.UserDao;
 import rav.model.entety.User;
 import rav.to.UserTO;
 import rav.util.Constants;
 
+import javax.annotation.PostConstruct;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Service
 public class UserService {
@@ -18,6 +21,11 @@ public class UserService {
     @Autowired
     public UserService(UserDao userDao) {
         this.userDao = userDao;
+    }
+
+    public UserTO getUser(String login) {
+        User user = userDao.findByLogin(login);
+        return user == null ? null : getDto(user);
     }
 
     public void createUser(UserTO newUser) throws ParseException {
@@ -46,10 +54,41 @@ public class UserService {
         }
     }
 
+    @PostConstruct
+    private void createAdminIfNotExist() {
+        User admin = userDao.findByLogin(Constants.ADMIN_LOGIN);
+        if (admin == null) {
+            admin = new User();
+            admin.setLogin(Constants.ADMIN_LOGIN);
+            admin.setPassword(Constants.ADMIN_DEFAULT_PASSWORD);
+            userDao.save(admin);
+        }
+    }
+
     private User fillUserParams(User user, UserTO userTO) throws ParseException {
         user.setLogin(userTO.getLogin());
-        user.setBirthday(formatter.parse(userTO.getBirthday()));
+        user.setBirthday(birthdayToDate(userTO.getBirthday()));
         user.setPassword(userTO.getPassword());
         return user;
+    }
+
+    private UserTO getDto(User user) {
+        return new UserTO(
+                user.getLogin(),
+                birthdayToString(user.getBirthday()),
+                "*****"
+        );
+    }
+
+    private String birthdayToString(Date birthday) {
+        return birthday == null ? null : formatter.format(birthday);
+    }
+
+    private Date birthdayToDate(String birthday) {
+        try {
+            return StringUtils.isEmpty(birthday) ? null : formatter.parse(birthday);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -4,8 +4,6 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,17 +16,17 @@ import rav.util.Constants;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired private RestAuthenticationEntryPoint authenticationEntryPoint;
-@Autowired private UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers(Constants.USERS_PATH)
-                .permitAll()
-                .antMatchers("/swagger-ui.html")
+                .antMatchers(Constants.USERS_PATH + "/*")
+                .hasAuthority(Constants.ADMIN_AUTHORITY)
+                .antMatchers(Constants.SWAGGER_URL)
                 .permitAll()
                 .antMatchers(Constants.HELLO_PATH)
                 .authenticated()
@@ -41,8 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService);
-
     }
+
     @Bean
     protected BasicAuthenticationEntryPoint authenticationEntryPoint() {
         val basicAuthenticationEntryPoint = new BasicAuthenticationEntryPoint();
