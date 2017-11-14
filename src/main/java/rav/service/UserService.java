@@ -2,18 +2,18 @@ package rav.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
 import rav.model.UserDao;
 import rav.model.entety.User;
 import rav.to.UserTO;
+import rav.util.Constants;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 @Service
 public class UserService {
+    private final SimpleDateFormat formatter = new SimpleDateFormat(Constants.BIRTHDAY_FORMAT);
     private UserDao userDao;
-    private final SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
 
     @Autowired
     public UserService(UserDao userDao) {
@@ -49,6 +49,7 @@ public class UserService {
     private User fillUserParams(User user, UserTO userTO) throws ParseException {
         user.setLogin(userTO.getLogin());
         user.setBirthday(formatter.parse(userTO.getBirthday()));
+        user.setPassword(userTO.getPassword());
         return user;
     }
 }

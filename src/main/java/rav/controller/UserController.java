@@ -6,11 +6,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import rav.service.UserService;
 import rav.to.UserTO;
+import rav.util.Constants;
 
 import java.text.ParseException;
 
 @Controller
-@RequestMapping("/users")
+@RequestMapping(Constants.USERS_PATH)
 public class UserController {
     private UserService userService;
 
@@ -40,6 +41,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{login}")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteUser(@PathVariable String login) {
         userService.deleteUser(login);
     }
